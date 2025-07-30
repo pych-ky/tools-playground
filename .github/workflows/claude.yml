@@ -15,9 +15,9 @@ jobs:
     if: contains(toJSON(github.event), '@claude')
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: read
+      pull-requests: read
+      issues: read
       id-token: write
       actions: read
     steps:
@@ -25,7 +25,5 @@ jobs:
       - uses: anthropics/claude-code-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          additional_permissions: |
-            actions: read
           custom_instructions: |
             Please respond in Japanese.
