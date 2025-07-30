@@ -24,6 +24,6 @@ jobs:
             - Performance considerations
             - Security concerns
             - Test coverage
-
-            Be constructive and helpful in your feedback.
+          custom_instructions: |
             Please respond in Japanese.
+            Be constructive and helpful in your feedback.
