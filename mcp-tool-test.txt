@@ -1,0 +1,15 @@
+MCP GitHub Create Pull Request Tool Test
+========================================
+
+このファイルは mcp__github__create_pull_request ツールの動作確認のために作成されました。
+
+テスト実行日時: 2025-07-31
+テスト目的: 以前の gh pr create コマンドの権限エラーが、新しいMCPツールで解決されるかを確認する
+
+前回のエラー参照:
+https://github.com/pych-ky/tools-playground/actions/runs/16637438632/job/47081076402#step:3:95
+
+期待される結果:
+- git add, commit, push が正常に動作する
+- mcp__github__create_pull_request ツールでPR作成が成功する
+- 権限エラーが発生しない
