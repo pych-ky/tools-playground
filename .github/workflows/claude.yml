@@ -24,5 +24,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
+          allowed_tools: |
+            mcp__github__create_pull_request
           custom_instructions: |
             Please respond in Japanese.
