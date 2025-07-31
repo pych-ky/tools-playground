@@ -15,7 +15,7 @@ on:
 
 jobs:
   claude:
-    if: contains(toJSON(github.event), '@claude')
+    if: contains(toJSON(github.event), '@claude') && github.event.sender.type != 'Bot'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
