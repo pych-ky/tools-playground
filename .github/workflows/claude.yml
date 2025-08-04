@@ -15,7 +15,9 @@ on:
 
 jobs:
   claude:
-    if: contains(toJSON(github.event), '@claude') && github.event.sender.type != 'Bot'
+    if: >-
+      contains(github.event.comment.body, '@claude') &&
+      github.event.comment.author_association == 'OWNER'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
