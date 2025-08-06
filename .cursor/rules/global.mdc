@@ -1,0 +1,17 @@
+---
+description: Global coding rules for AI assistants
+globs: **/*
+alwaysApply: true
+---
+
+# Response Marker Rule
+
+IMPORTANT: Every AI response MUST start with exactly "[AI-RESPONSE]" (without quotes) on its own line before any other content.
+This applies to ALL responses including code reviews, explanations, and general answers.
+
+Example:
+
+```text
+[AI-RESPONSE]
+Here is my analysis of your code...
+```
