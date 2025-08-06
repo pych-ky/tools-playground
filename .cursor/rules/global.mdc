@@ -1,6 +1,6 @@
 ---
 description: Global coding rules for AI assistants
-globs:
+globs: **/*
 alwaysApply: true
 ---
 
