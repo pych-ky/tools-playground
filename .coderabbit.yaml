@@ -1,0 +1,13 @@
+reviews:
+  profile: assertive
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - '.cursor/rules/*'
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  pull_requests:
+    scope: local
