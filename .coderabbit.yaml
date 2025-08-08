@@ -1,0 +1,164 @@
+language: ja-JP
+early_access: true
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  path_filters:
+    # ビルド・出力ディレクトリ
+    - '!**/dist/**'
+    - '!**/build/**'
+    - '!**/out/**'
+    - '!**/target/**'
+    - '!**/.next/**'
+    - '!**/.nuxt/**'
+    - '!**/.output/**'
+
+    # 依存関係・パッケージ
+    - '!**/node_modules/**'
+    - '!**/vendor/**'
+    - '!**/bower_components/**'
+    - '!**/jspm_packages/**'
+
+    # IDE・エディタ設定
+    - '!**/.idea/**'
+    - '!**/.vscode/**'
+    - '!**/*.swp'
+    - '!**/*.swo'
+    - '!**/*~'
+    - '!**/.DS_Store'
+    - '!**/Thumbs.db'
+
+    # テスト関連
+    - '!**/coverage/**'
+    - '!**/.nyc_output/**'
+    - '!**/*.lcov'
+    - '!**/test-results/**'
+    - '!**/jest-cache/**'
+
+    # ログ・一時ファイル
+    - '!**/*.log'
+    - '!**/logs/**'
+    - '!**/tmp/**'
+    - '!**/temp/**'
+    - '!**/*.tmp'
+    - '!**/*.temp'
+    - '!**/*.cache'
+    - '!**/.cache/**'
+
+    # 環境設定・秘密情報
+    - '!**/.env'
+    - '!**/.env.*'
+    - '!**/*.pem'
+    - '!**/*.key'
+    - '!**/*.crt'
+    - '!**/*.p12'
+    - '!**/*.pfx'
+
+    # コンパイル済み・バイナリファイル
+    - '!**/*.exe'
+    - '!**/*.dll'
+    - '!**/*.so'
+    - '!**/*.dylib'
+    - '!**/*.o'
+    - '!**/*.a'
+    - '!**/*.lib'
+    - '!**/*.class'
+    - '!**/*.jar'
+    - '!**/*.war'
+    - '!**/*.ear'
+    - '!**/*.pyc'
+    - '!**/*.pyo'
+    - '!**/*.pyd'
+    - '!**/__pycache__/**'
+
+    # アーカイブ・圧縮ファイル
+    - '!**/*.zip'
+    - '!**/*.tar'
+    - '!**/*.tar.gz'
+    - '!**/*.tgz'
+    - '!**/*.rar'
+    - '!**/*.7z'
+    - '!**/*.gz'
+    - '!**/*.bz2'
+    - '!**/*.xz'
+    - '!**/*.iso'
+
+    # メディアファイル
+    - '!**/*.jpg'
+    - '!**/*.jpeg'
+    - '!**/*.png'
+    - '!**/*.gif'
+    - '!**/*.bmp'
+    - '!**/*.tiff'
+    - '!**/*.ico'
+    - '!**/*.svg'
+    - '!**/*.webp'
+    - '!**/*.mp3'
+    - '!**/*.wav'
+    - '!**/*.mp4'
+    - '!**/*.avi'
+    - '!**/*.mov'
+    - '!**/*.mkv'
+    - '!**/*.webm'
+    - '!**/*.flv'
+    - '!**/*.wmv'
+
+    # フォントファイル
+    - '!**/*.ttf'
+    - '!**/*.otf'
+    - '!**/*.woff'
+    - '!**/*.woff2'
+    - '!**/*.eot'
+
+    # データベース・データファイル
+    - '!**/*.db'
+    - '!**/*.sqlite'
+    - '!**/*.sqlite3'
+    - '!**/*.csv'
+    - '!**/*.tsv'
+    - '!**/*.parquet'
+    - '!**/*.pkl'
+    - '!**/*.pickle'
+
+    # ドキュメント（バイナリ形式）
+    - '!**/*.pdf'
+    - '!**/*.doc'
+    - '!**/*.docx'
+    - '!**/*.xls'
+    - '!**/*.xlsx'
+    - '!**/*.ppt'
+    - '!**/*.pptx'
+
+    # 自動生成されたコード
+    - '!**/generated/**'
+    - '!**/@generated/**'
+    - '!**/gen/**'
+    - '!**/_gen/**'
+    - '!**/*.pb.go'
+    - '!**/*.pb.gw.go'
+
+    # Terraform状態ファイル
+    - '!**/*.tfstate'
+    - '!**/*.tfstate.*'
+    - '!**/.terraform/**'
+
+    # WebAssemblyバイナリ
+    - '!**/*.wasm'
+  auto_review:
+    drafts: true
+    base_branches:
+      - .*
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - .cursor/rules/**/*
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  pull_requests:
+    scope: local
+code_generation:
+  docstrings:
+    language: ja-JP
