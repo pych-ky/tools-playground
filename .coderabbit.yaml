@@ -111,6 +111,8 @@ reviews:
     - '!**/*.tfstate.backup'
   auto_review:
     drafts: true
+    base_branches:
+      - .*
 knowledge_base:
   code_guidelines:
     enabled: true
