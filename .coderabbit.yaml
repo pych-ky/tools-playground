@@ -1,5 +1,128 @@
+language: ja-JP
+early_access: true
 reviews:
   profile: assertive
+  request_changes_workflow: true
+  path_filters:
+    - '!dist/**'
+    - '!**/*.app'
+    - '!**/*.bin'
+    - '!**/*.bz2'
+    - '!**/*.class'
+    - '!**/*.db'
+    - '!**/*.csv'
+    - '!**/*.tsv'
+    - '!**/*.dat'
+    - '!**/*.dll'
+    - '!**/*.dylib'
+    - '!**/*.egg'
+    - '!**/*.glif'
+    - '!**/*.gz'
+    - '!**/*.xz'
+    - '!**/*.zip'
+    - '!**/*.7z'
+    - '!**/*.rar'
+    - '!**/*.zst'
+    - '!**/*.ico'
+    - '!**/*.jar'
+    - '!**/*.tar'
+    - '!**/*.war'
+    - '!**/*.lo'
+    - '!**/*.log'
+    - '!**/*.mp3'
+    - '!**/*.wav'
+    - '!**/*.wma'
+    - '!**/*.mp4'
+    - '!**/*.avi'
+    - '!**/*.mkv'
+    - '!**/*.wmv'
+    - '!**/*.m4a'
+    - '!**/*.m4v'
+    - '!**/*.3gp'
+    - '!**/*.3g2'
+    - '!**/*.rm'
+    - '!**/*.mov'
+    - '!**/*.flv'
+    - '!**/*.iso'
+    - '!**/*.swf'
+    - '!**/*.flac'
+    - '!**/*.nar'
+    - '!**/*.o'
+    - '!**/*.ogg'
+    - '!**/*.otf'
+    - '!**/*.p'
+    - '!**/*.pdf'
+    - '!**/*.doc'
+    - '!**/*.docx'
+    - '!**/*.xls'
+    - '!**/*.xlsx'
+    - '!**/*.map'
+    - '!**/*.out'
+    - '!**/*.ppt'
+    - '!**/*.pptx'
+    - '!**/*.pkl'
+    - '!**/*.pickle'
+    - '!**/*.pyc'
+    - '!**/*.pyd'
+    - '!**/*.pyo'
+    - '!**/*.pub'
+    - '!**/*.pem'
+    - '!**/*.rkt'
+    - '!**/*.so'
+    - '!**/*.ss'
+    - '!**/*.eot'
+    - '!**/*.exe'
+    - '!**/*.pb.go'
+    - '!**/*.pb.gw.go'
+    - '!**/*.lock'
+    - '!**/*.ttf'
+    - '!**/*.xml'
+    - '!**/*.cfg'
+    - '!**/*.toml'
+    - '!**/*.ini'
+    - '!**/*.mod'
+    - '!**/*.sum'
+    - '!**/*.work'
+    - '!**/*.json'
+    - '!**/*.mmd'
+    - '!**/*.svg'
+    - '!**/*.jpeg'
+    - '!**/*.jpg'
+    - '!**/*.png'
+    - '!**/*.gif'
+    - '!**/*.bmp'
+    - '!**/*.tiff'
+    - '!**/*.webm'
+    - '!**/*.woff'
+    - '!**/*.woff2'
+    - '!**/*.dot'
+    - '!**/*.md5sum'
+    - '!**/*.wasm'
+    - '!**/*.snap'
+    - '!**/*.parquet'
+    - '!**/gen/**'
+    - '!**/_gen/**'
+    - '!**/generated/**'
+    - '!**/@generated/**'
+    - '!**/vendor/**'
+    - '!**/*.min.js'
+    - '!**/*.min.js.map'
+    - '!**/*.min.js.css'
+    - '!**/*.tfstate'
+    - '!**/*.tfstate.backup'
+  auto_review:
+    drafts: true
+    base_branches:
+      - .*
+  tools:
+    languagetool:
+      disabled_rules:
+        - EN_UNPAIRED_BRACKETS
+        - EN_UNPAIRED_QUOTES
+      disabled_categories:
+        - TYPOS
+        - TYPOGRAPHY
+        - CASING
 knowledge_base:
   code_guidelines:
     enabled: true
@@ -11,3 +134,6 @@ knowledge_base:
     scope: local
   pull_requests:
     scope: local
+code_generation:
+  docstrings:
+    language: ja-JP
