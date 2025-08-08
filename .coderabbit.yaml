@@ -111,17 +111,6 @@ reviews:
     - '!**/*.tfstate.backup'
   auto_review:
     drafts: true
-    base_branches:
-      - .*
-  tools:
-    languagetool:
-      disabled_rules:
-        - EN_UNPAIRED_BRACKETS
-        - EN_UNPAIRED_QUOTES
-      disabled_categories:
-        - TYPOS
-        - TYPOGRAPHY
-        - CASING
 knowledge_base:
   code_guidelines:
     enabled: true
