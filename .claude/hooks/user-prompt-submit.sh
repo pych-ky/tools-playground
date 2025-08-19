@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # プロジェクトルート
-project_root=$(
+readonly project_root=$(
   cd -- "$(dirname -- "${BASH_SOURCE[0]}")"/../.. >/dev/null 2>&1 && pwd -P
 )
 
@@ -24,7 +24,7 @@ print_file "$project_root/.claude/CLAUDE.md"
 print_file "$project_root/.cursor/rules/global.mdc"
 
 # オプションルール (rulesディレクトリ以下の.mdcファイル)
-rules_dir="$project_root/.cursor/rules"
+readonly rules_dir="$project_root/.cursor/rules"
 if [[ -d "$rules_dir" ]]; then
   find "$rules_dir" -mindepth 2 -type f -name '*.mdc' -print0 |
     while IFS= read -r -d '' f; do
