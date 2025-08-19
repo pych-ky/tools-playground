@@ -1,30 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd -P)"
+project_root=$(
+  cd -- "$(dirname -- "${BASH_SOURCE[0]}")"/../.. >/dev/null 2>&1 && pwd -P
+)
 
-# CLAUDE.md
-[[ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]] && {
-  echo "===== CLAUDE.md の内容 ====="
-  cat "$PROJECT_DIR/.claude/CLAUDE.md"
-  echo ""
+print_file() {
+  local path=$1
+  [[ -r $path ]] || return
+  printf '===== %s =====\n' "$path"
+  cat -- "$path"
+  printf '\n'
 }
 
-# global.mdc
-[[ -f "$PROJECT_DIR/.cursor/rules/global.mdc" ]] && {
-  echo "===== .cursor/rules/global.mdc の内容 ====="
-  cat "$PROJECT_DIR/.cursor/rules/global.mdc"
-  echo ""
-}
+# 必須ルール
+print_file "$project_root/.claude/CLAUDE.md"
+print_file "$project_root/.cursor/rules/global.mdc"
 
-# .cursor/rules 内のすべての .mdc ファイル
-# find "$PROJECT_DIR/.cursor/rules"/*/ -name "*.mdc" 2>/dev/null | sort | while read -r file; do
-#   [[ -f "$file" ]] && {
-#     echo "===== $(basename "$file") の内容 ====="
-#     cat "$file"
-#     echo ""
-#   }
-# done
+# オプションルール (rulesディレクトリ以下の.mdcファイル)
+find "$project_root/.cursor/rules" -mindepth 2 -type f -name '*.mdc' -print0 2>/dev/null |
+  while IFS= read -r -d '' f; do
+    print_file "$f"
+  done
 
 # オプション: ログ出力
-# echo "[$(date '+%Y-%m-%d %H:%M:%S')] user-prompt-submit hook executed" >>"$PROJECT_DIR/hook-log.txt"
+# printf '[%s] user-prompt-submit hook executed\n' "$(date +'%F %T')" >>"$project_root/hook-log.txt"
