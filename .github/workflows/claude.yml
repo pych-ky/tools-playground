@@ -20,8 +20,8 @@ jobs:
       github.event.comment.author_association == 'OWNER'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: anthropics/claude-code-action@beta
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: anthropics/claude-code-action@28f83620103c48a57093dcc2837eec89e036bb9f # beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
