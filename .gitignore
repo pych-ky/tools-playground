@@ -1,0 +1,11 @@
+# ローカル設定・生成物
+
+## Claude Code
+.claude/.cc-writes/
+.claude/plans/
+.claude/projects/
+.claude/settings.local.json
+.claude/todos/
+
+## Serena MCP
+.serena/
