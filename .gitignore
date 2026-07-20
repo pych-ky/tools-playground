@@ -1,4 +1,29 @@
-# ローカル設定・生成物
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*~
+
+# Local tool state
+.serena/
+
+# Local output
+*.bak
+*.log
+*.tmp
+.tmp/
+work/
 
 ## Claude Code
 .claude/.cc-writes/
@@ -6,6 +31,3 @@
 .claude/projects/
 .claude/settings.local.json
 .claude/todos/
-
-## Serena MCP
-.serena/
