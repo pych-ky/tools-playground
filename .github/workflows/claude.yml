@@ -23,6 +23,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Remove this workaround after anthropics/claude-code-action#1236 is fixed.
+      - name: Authenticate branch setup
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          auth_header="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
+          git config --local "http.${GITHUB_SERVER_URL}/.extraheader" \
+            "AUTHORIZATION: basic ${auth_header}"
       - uses: anthropics/claude-code-action@fa7e2f0a29a126f0b81cdcf360561b36e44cf608 # v1.0.180
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -31,3 +39,9 @@ jobs:
           claude_args: |
             --allowedTools mcp__github__create_pull_request
             --system-prompt "Please respond in Japanese."
+      - name: Remove Git credentials
+        if: always()
+        run: |
+          git config --local --unset-all \
+            "http.${GITHUB_SERVER_URL}/.extraheader" || true
+          git remote set-url origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
