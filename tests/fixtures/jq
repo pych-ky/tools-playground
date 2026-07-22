@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -eu
+
+: "${TEST_REAL_JQ:?}"
+
+if [ "${1:-}" = -n ]; then
+  exit 1
+fi
+
+exec "$TEST_REAL_JQ" "$@"
