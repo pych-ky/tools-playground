@@ -12,5 +12,3 @@ blocks representative direct Bash invocations that match its configured rules.
 - Allows valid commands that do not match a blocking rule
 - Does not comprehensively inspect wrappers, expansions, absolute paths, or
   other interpreters
-
-Run `./tests/pre-bash-guard.sh` to verify the guard.
