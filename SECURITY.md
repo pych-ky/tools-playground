@@ -1,15 +1,14 @@
-# Security Policy
+# セキュリティポリシー
 
-## Reporting Security Vulnerabilities
+## 脆弱性の報告
 
-Do not open a public issue for a suspected vulnerability or exposed credential.
-Use GitHub private vulnerability reporting instead:
+脆弱性や認証情報の漏えいが疑われる場合は、公開 Issue を作成せず、GitHub の非公開脆弱性報告を利用してください。
 
 <https://github.com/pych-ky/tools-playground/security/advisories/new>
 
-Include reproduction steps, impact, and a suggested fix when available, but do
-not include active credentials.
+可能であれば、再現手順、影響、修正案を含めてください。
+ただし、有効な認証情報は記載しないでください。
 
-## Supported Versions
+## サポート対象
 
-The latest version on the default branch is the supported version.
+デフォルトブランチの最新バージョンをサポートします。
