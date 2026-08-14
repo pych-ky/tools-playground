@@ -1,14 +1,17 @@
 # Tools Playground
 
-Experimental repository for various tools.
+各種ツールを試すための実験用リポジトリです。
 
-## Bash command guard
+## Bash コマンドガード
 
-The [Bash command guard](.claude/hooks/pre-bash-guard.sh)
-blocks representative direct Bash invocations that match its configured rules.
+[Bash コマンドガード](.claude/hooks/pre-bash-guard.sh)は、設定ルールに一致する代表的な Bash の直接呼び出しをブロックします。
 
-- Requires `jq`
-- Blocks Bash calls with exit code `2` when the hook input cannot be validated
-- Allows valid commands that do not match a blocking rule
-- Does not comprehensively inspect wrappers, expansions, absolute paths, or
-  other interpreters
+### 前提条件
+
+`jq` が必要です。
+
+### 動作
+
+- フック入力を検証できない場合は、終了コード `2` で Bash 呼び出しをブロックする
+- ブロックルールに一致しない有効なコマンドは許可する
+- ラッパー、展開、絶対パス、ほかのインタープリター経由の呼び出しは網羅的に検査しない
