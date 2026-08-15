@@ -1,7 +1,7 @@
 language: ja-JP
 early_access: true
 reviews:
-  profile: assertive
+  profile: chill
   request_changes_workflow: true
   path_filters:
     # ビルド・出力ディレクトリ
