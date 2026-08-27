@@ -6,6 +6,13 @@
 *.key
 *.p12
 *.pfx
+*.p8
+*.ppk
+id_rsa*
+id_ecdsa*
+id_ed25519*
+id_dsa*
+.netrc
 secrets/
 credentials/
 
@@ -14,9 +21,6 @@ credentials/
 .idea/
 .vscode/
 *~
-
-# Local tool state
-.serena/
 
 # Local output
 *.bak
