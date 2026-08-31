@@ -5,52 +5,37 @@ set -euo pipefail
 
 # 入力
 
+# 安全側に倒して、理由を stderr へ通知したうえで終了コード 2 で Bash 呼び出しをブロック
+# コマンド置換の中から呼ぶとサブシェルだけが終了するため、呼び出し元は失敗を伝播させる
+block_and_exit() {
+  printf 'pre-bash-guard.sh: %s; Bash command blocked\n' "$1" >&2
+  exit 2
+}
+
 # PreToolUse イベント JSON から Bash コマンドを取り出し、前後の空白をトリムして返却
 # Bash 以外・空コマンドのときは何も出力なし
 extract_bash_command() {
-  local input tool_name command
-  if ! input=$(cat 2>/dev/null); then
-    printf 'pre-bash-guard.sh: invalid PreToolUse input; Bash command blocked\n' >&2
-    return 2
-  fi
-
-  if ! input=$(jq -cse '
-    if length == 1 and (
-      .[0] |
-      type == "object" and
-      (.tool_name | type) == "string" and
-      (
-        .tool_name != "Bash" or
-        (
-          (.tool_input | type) == "object" and
-          (.tool_input.command | type) == "string" and
-          (.tool_input.command | contains("\u0000") | not)
-        )
-      )
-    )
+  local command
+  if ! command=$(jq -rse '
+    if length == 1 and (.[0] | type == "object" and (.tool_name | type) == "string")
     then .[0]
     else error("invalid PreToolUse input")
     end
-  ' 2>/dev/null <<<"$input"); then
-    printf 'pre-bash-guard.sh: invalid PreToolUse input; Bash command blocked\n' >&2
-    return 2
-  fi
-
-  if ! tool_name=$(jq -er '.tool_name' 2>/dev/null <<<"$input"); then
-    printf 'pre-bash-guard.sh: invalid PreToolUse input; Bash command blocked\n' >&2
-    return 2
-  fi
-  [[ "$tool_name" == "Bash" ]] || return 0
-  if ! command=$(jq -er '.tool_input.command' 2>/dev/null <<<"$input"); then
-    printf 'pre-bash-guard.sh: invalid PreToolUse input; Bash command blocked\n' >&2
-    return 2
+    | if .tool_name != "Bash" then ""
+      elif (.tool_input | type) == "object"
+        and (.tool_input.command | type) == "string"
+        and (.tool_input.command | contains("\u0000") | not)
+      then .tool_input.command
+      else error("invalid PreToolUse input")
+      end
+  ' 2>/dev/null); then
+    block_and_exit 'invalid PreToolUse input'
   fi
 
   [[ -n "$command" ]] || return 0
   if ! command=$(sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
     2>/dev/null <<<"$command"); then
-    printf 'pre-bash-guard.sh: failed to normalize Bash command; Bash command blocked\n' >&2
-    return 2
+    block_and_exit 'failed to normalize Bash command'
   fi
   printf '%s\n' "$command"
 }
@@ -161,29 +146,20 @@ detect_block_reasons() {
 
 # 出力
 
-# ブロック理由 (可変長引数) を JSON にまとめて出力し、Claude にブロックを通知
+# ブロック理由 (1 行 1 件) を JSON にまとめて出力し、Claude にブロックを通知
 print_block_json() {
-  local command="$1"
-  shift
-
-  local details='' reason decision
-  for reason in "$@"; do
-    if [[ -n "$details" ]]; then
-      details+=$'\n'
-    fi
-    details+="- $reason"
-  done
-
-  local msg="危険な可能性がある Bash コマンドをブロックしました。"$'\n\n'"Command:"$'\n  '"$command"$'\n\n'"Reasons:"$'\n'"$details"
-  if ! decision=$(jq -n --arg msg "$msg" '{
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "deny",
-      permissionDecisionReason: $msg
-    }
-  }' 2>/dev/null); then
-    printf 'pre-bash-guard.sh: failed to create deny decision; Bash command blocked\n' >&2
-    return 2
+  local command="$1" reasons="$2" decision
+  if ! decision=$(jq -n --arg command "$command" --arg reasons "$reasons" '
+    ($reasons | split("\n") | map("- " + .) | join("\n")) as $details
+    | {
+        hookSpecificOutput: {
+          hookEventName: "PreToolUse",
+          permissionDecision: "deny",
+          permissionDecisionReason: "危険な可能性がある Bash コマンドをブロックしました。\n\nCommand:\n  \($command)\n\nReasons:\n\($details)"
+        }
+      }
+  ' 2>/dev/null); then
+    block_and_exit 'failed to create deny decision'
   fi
   printf '%s\n' "$decision"
 }
@@ -192,30 +168,23 @@ print_block_json() {
 
 main() {
   # ポリシーを検証できない場合は安全側に倒して Bash 呼び出しを拒否
-  command -v jq >/dev/null 2>&1 || {
-    printf 'pre-bash-guard.sh: jq is required; Bash command blocked\n' >&2
-    return 2
-  }
+  if ! command -v jq >/dev/null 2>&1; then
+    block_and_exit 'jq is required'
+  fi
 
   # Bash コマンドを取り出し、対象外なら素通し
-  local command reasons_output
+  local command reasons
   command=$(extract_bash_command) || return 2
   [[ -n "$command" ]] || return 0
 
   # 全ルールで判定し、ヒットが無ければ素通し
-  local -a reasons=()
-  local reason
-  if ! reasons_output=$(detect_block_reasons "$command"); then
-    printf 'pre-bash-guard.sh: failed to evaluate Bash command; Bash command blocked\n' >&2
-    return 2
+  if ! reasons=$(detect_block_reasons "$command"); then
+    block_and_exit 'failed to evaluate Bash command'
   fi
-  [[ -n "$reasons_output" ]] || return 0
-  while IFS= read -r reason; do
-    reasons+=("$reason")
-  done <<<"$reasons_output"
+  [[ -n "$reasons" ]] || return 0
 
   # 1 件以上ヒットしたら permissionDecision: deny の JSON を返してブロック
-  print_block_json "$command" "${reasons[@]}" || return 2
+  print_block_json "$command" "$reasons" || return 2
   return 0
 }
 
