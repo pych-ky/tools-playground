@@ -39,7 +39,7 @@ jobs:
             actions: read
           claude_args: |
             --allowedTools mcp__github__create_pull_request
-            --append-system-prompt "Please respond in Japanese."
+            --system-prompt "Please respond in Japanese."
       - name: Remove Git credentials
         if: always()
         run: |
