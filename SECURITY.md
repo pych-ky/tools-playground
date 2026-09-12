@@ -2,12 +2,11 @@
 
 ## 脆弱性の報告
 
-脆弱性や認証情報の漏えいが疑われる場合は、公開 Issue を作成せず、GitHub の非公開脆弱性報告を利用してください。
+脆弱性や認証情報の漏えいが疑われる場合は、公開 Issue を作成せず、[GitHub の非公開脆弱性報告](https://github.com/pych-ky/tools-playground/security/advisories/new)を利用してください。
 
-<https://github.com/pych-ky/tools-playground/security/advisories/new>
+可能であれば、再現手順・影響・修正案を含めてください。
 
-可能であれば、再現手順、影響、修正案を含めてください。
-ただし、有効な認証情報は記載しないでください。
+有効な認証情報は記載しないでください。
 
 ## サポート対象
 
