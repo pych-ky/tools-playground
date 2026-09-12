@@ -29,7 +29,7 @@ credentials/
 .tmp/
 work/
 
-## Claude Code
+# Claude Code
 .claude/.cc-writes/
 .claude/plans/
 .claude/projects/
