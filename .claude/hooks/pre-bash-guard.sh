@@ -3,15 +3,13 @@
 
 set -euo pipefail
 
-# 理由を stderr に出力し、終了コード 2 で Bash 呼び出しをブロック
 # コマンド置換内ではサブシェルだけが終了するため、呼び出し元で失敗を伝播させる
 block_and_exit() {
   printf 'pre-bash-guard.sh: %s; Bash command blocked\n' "$1" >&2
   exit 2
 }
 
-# PreToolUse イベント JSON の Bash コマンドを、前後の空白を除いて返す
-# Bash 以外・空コマンドは出力しない
+# Bash コマンドを検証・抽出し、前後の空白を除く
 extract_bash_command() {
   local command
   if ! command=$(jq -rse '
@@ -38,10 +36,8 @@ extract_bash_command() {
   printf '%s\n' "$command"
 }
 
-# 引用外のコマンド区切りを、マスク処理と判定ルールで共有
 readonly OPERATOR_CHARS=';&|()'
 
-# command が pattern に一致すれば reason を 1 行出力
 # 不正な pattern（=~ の終了コード 2）はブロック
 emit_if_matches() {
   local command="$1" pattern="$2" reason="$3" status
@@ -53,7 +49,6 @@ emit_if_matches() {
   esac
 }
 
-# Bash の行継続（バックスラッシュ + 改行）を結合して返す
 # 行末のバックスラッシュが偶数個の場合とコメント内では、改行を区切りとして残す
 join_line_continuations() {
   local text="$1" line joined=''
@@ -75,10 +70,10 @@ join_line_continuations() {
   printf '%s' "$joined"
 }
 
-# echo と git commit の引用内演算子をマスクし、長い入力や複雑な構文はそのまま返す
+# echo と git commit の静的な引用内演算子をマスクする
 mask_static_quoted_operators() {
   local command="$1"
-  local mask_target='^[[:space:]]*((echo)([[:space:]]|$)|git[[:space:]]+commit([[:space:]]|$))'
+  local mask_target='^[[:space:]]*(echo|git[[:space:]]+commit)([[:space:]]|$)'
   local static_command="^([^'\"${OPERATOR_CHARS}<>]|'[^']*'|\"[^\"]*\")*$"
 
   # Bash 3.2 での文字列処理の遅延を抑える
@@ -114,18 +109,15 @@ detect_block_reasons() {
   local token_gap="([[:blank:]]+${token})*[[:blank:]]+"
   local short_flags="[^-[:space:]${OPERATOR_CHARS}]*"
 
-  # 予約語・前置代入・リダイレクトを任意の順で読み飛ばす
   # リダイレクト中の & と | はコマンド区切りより先に消費する
   local reserved_word="(if|then|elif|else|while|until|do|time([[:blank:]]+(-p|--))*|coproc|function[[:blank:]]+${token}|[{!])"
   local assignment="[[:alpha:]_][^[:space:]${OPERATOR_CHARS}=]*=${token_char}*"
   local redirect="([0-9]+|[{][[:alpha:]_][[:alnum:]_]*[}])?&?[<>]+[|&-]?[[:blank:]]*${token}"
   local skip_word="(${reserved_word}|${assignment}|${redirect})"
 
-  # 入力先頭またはコマンド区切りの直後にマッチし、先頭空白を許す
   local newline=$'\n'
   local command_start="(^|[${OPERATOR_CHARS}${newline}])[[:space:]]*(${skip_word}[[:blank:]]+)*"
 
-  # パス付き・alias 回避（\ 付き）の呼び出しも対象とする
   # 代入値をパスと誤認しないよう = を含む語を除く。文字クラス内の \ はリテラル
   local command_prefix="([^[:space:]${OPERATOR_CHARS}=]*/|[\\])?"
 
@@ -146,7 +138,7 @@ detect_block_reasons() {
   emit_if_matches "$masked_command" '(curl|wget)[^|]*\|[[:space:]]*(sh|bash)($|[^[:alnum:]_.-])' "curl / wget ... | sh / bash 形式のコマンドは許可していません。"
 }
 
-# ブロック理由（1 行 1 件）を JSON にまとめて出力し、Claude に拒否を通知
+# ブロック理由を PreToolUse の拒否 JSON にまとめる
 print_block_json() {
   local command="$1" reasons="$2" decision
   if ! decision=$(jq -n --arg command "$command" --arg reasons "$reasons" '
@@ -165,7 +157,6 @@ print_block_json() {
 }
 
 main() {
-  # jq がなければポリシーを検証できないためブロック
   if ! command -v jq >/dev/null 2>&1; then
     block_and_exit 'jq is required'
   fi
@@ -180,7 +171,6 @@ main() {
   [[ -n "$reasons" ]] || return 0
 
   print_block_json "$command" "$reasons" || return 2
-  return 0
 }
 
 main "$@"
