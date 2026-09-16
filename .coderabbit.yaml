@@ -1,11 +1,14 @@
-language: ja-JP
+language: ja-JP # レビュー言語
 reviews:
-  profile: chill
+  profile: chill # バランス重視のレビュー
+  # レビュー結果に応じた修正要求・自動承認
   request_changes_workflow: true
   auto_review:
-    drafts: true
+    drafts: true # ドラフト PR も自動レビュー
+    # 全マージ先ブランチを対象に追加（正規表現）
     base_branches:
       - .*
+# 学習内容・Issue・PR の参照範囲をこのリポジトリに限定
 knowledge_base:
   learnings:
     scope: local
@@ -15,4 +18,4 @@ knowledge_base:
     scope: local
 code_generation:
   docstrings:
-    language: ja-JP
+    language: ja-JP # 生成する docstring の言語

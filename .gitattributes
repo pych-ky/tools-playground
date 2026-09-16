@@ -1,5 +1,7 @@
+# テキストを自動判定し、改行を LF に統一
 * text=auto eol=lf
 
+# バイナリは改行変換・テキスト差分・テキストマージの対象外
 *.png binary
 *.jpg binary
 *.jpeg binary

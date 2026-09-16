@@ -1,3 +1,4 @@
+# 所有者の @claude コメントで実行
 name: Claude Code
 
 permissions: {}
@@ -24,7 +25,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # Remove this workaround after anthropics/claude-code-action#1236 is fixed.
+      # Workaround for anthropics/claude-code-action#1236; remove when fixed.
       - name: Authenticate branch setup
         env:
           GITHUB_TOKEN: ${{ github.token }}
