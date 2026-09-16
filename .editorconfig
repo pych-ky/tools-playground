@@ -1,5 +1,7 @@
+# 上位ディレクトリの設定を継承しない
 root = true
 
+# 全ファイル: UTF-8・LF・末尾改行、行末空白削除、スペース2字
 [*]
 charset = utf-8
 end_of_line = lf
@@ -8,12 +10,15 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 
+# Markdown の改行用の行末空白を保持
 [*.{md,md.template}]
 trim_trailing_whitespace = false
 
+# Python はスペース4字
 [*.py]
 indent_size = 4
 
+# Makefile はタブでインデント
 [Makefile]
 indent_style = tab
 indent_size = tab

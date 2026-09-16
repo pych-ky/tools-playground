@@ -1,3 +1,4 @@
+# claude-review 付き PR を、ラベル追加・更新時にレビュー
 name: Claude Code Review
 
 permissions: {}

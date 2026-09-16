@@ -1,3 +1,4 @@
+# GitHub Actions の依存更新を毎週確認
 version: 2
 updates:
   - package-ecosystem: "github-actions"

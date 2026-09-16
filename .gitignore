@@ -1,4 +1,4 @@
-# Credentials and local configuration
+# Secrets and local config
 .env
 .env.*
 !.env.example
@@ -16,20 +16,20 @@ id_dsa*
 secrets/
 credentials/
 
-# Editors and operating systems
+# Editor and OS files
 .DS_Store
 .idea/
 .vscode/
 *~
 
-# Local output
+# Temporary output
 *.bak
 *.log
 *.tmp
 .tmp/
 work/
 
-# Claude Code
+# Local Claude Code state
 .claude/.cc-writes/
 .claude/plans/
 .claude/projects/

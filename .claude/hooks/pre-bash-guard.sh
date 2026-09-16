@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# 危険な Bash コマンドをブロックする PreToolUse フックスクリプト
+# Bash の危険操作を拒否する PreToolUse フック
 
 set -euo pipefail
 
-# コマンド置換内ではサブシェルだけが終了するため、呼び出し元で失敗を伝播させる
+# コマンド置換の exit はサブシェルだけに効くため、呼び出し元でも終了させる
 block_and_exit() {
   printf 'pre-bash-guard.sh: %s; Bash command blocked\n' "$1" >&2
   exit 2
 }
 
-# Bash コマンドを検証・抽出し、前後の空白を除く
 extract_bash_command() {
   local command
   if ! command=$(jq -rse '
@@ -38,7 +37,6 @@ extract_bash_command() {
 
 readonly OPERATOR_CHARS=';&|()'
 
-# 不正な pattern（=~ の終了コード 2）はブロック
 emit_if_matches() {
   local command="$1" pattern="$2" reason="$3" status
   [[ $command =~ $pattern ]] && status=0 || status=$?
@@ -49,7 +47,7 @@ emit_if_matches() {
   esac
 }
 
-# 行末のバックスラッシュが偶数個の場合とコメント内では、改行を区切りとして残す
+# 偶数個の行末 \ とコメントでは改行を残す
 join_line_continuations() {
   local text="$1" line joined=''
   local continuation=$'\\\n' odd_trailing_backslashes='(^|[^\\])(\\\\)*\\$'
@@ -70,13 +68,12 @@ join_line_continuations() {
   printf '%s' "$joined"
 }
 
-# echo と git commit の静的な引用内演算子をマスクする
 mask_static_quoted_operators() {
   local command="$1"
   local mask_target='^[[:space:]]*(echo|git[[:space:]]+commit)([[:space:]]|$)'
   local static_command="^([^'\"${OPERATOR_CHARS}<>]|'[^']*'|\"[^\"]*\")*$"
 
-  # Bash 3.2 での文字列処理の遅延を抑える
+  # Bash 3.2 の長文処理による遅延防止
   if ((${#command} > 1024)) || [[ ! $command =~ $mask_target ]]; then
     printf '%s' "$command"
     return 0
@@ -89,27 +86,26 @@ mask_static_quoted_operators() {
     ;;
   esac
 
-  # 引用が閉じ、引用外に演算子がなければ、置換対象はすべて引用内にある
+  # 引用が閉じ、演算子がすべて引用内なら一括置換できる
   if [[ $command =~ $static_command ]]; then
     command="${command//[$OPERATOR_CHARS]/_}"
   fi
   printf '%s' "$command"
 }
 
-# 代表的な直接呼び出しのブロック理由を 1 行ずつ出力（予約語・前置代入・リダイレクト直後、パス・\ 付きに対応）
-# 展開、ラッパー（find -exec / xargs / env 等）、引用したコマンド名・引用を含む値、別インタープリタ経由は網羅しない
+# 展開・ラッパー・引用したコマンド名や引用を含む値・別インタープリタ経由は網羅しない
 detect_block_reasons() {
   local command masked_command
   command="$(join_line_continuations "$1")" || block_and_exit 'failed to join line continuations'
   masked_command="$(mask_static_quoted_operators "$command")"
 
-  # コマンド内トークン区切りは空白のみ、改行はコマンド区切り
+  # 改行はコマンド区切り
   local token_char="[^[:space:]${OPERATOR_CHARS}]"
   local token="${token_char}+"
   local token_gap="([[:blank:]]+${token})*[[:blank:]]+"
   local short_flags="[^-[:space:]${OPERATOR_CHARS}]*"
 
-  # リダイレクト中の & と | はコマンド区切りより先に消費する
+  # リダイレクト内の &・| は区切りにしない
   local reserved_word="(if|then|elif|else|while|until|do|time([[:blank:]]+(-p|--))*|coproc|function[[:blank:]]+${token}|[{!])"
   local assignment="[[:alpha:]_][^[:space:]${OPERATOR_CHARS}=]*=${token_char}*"
   local redirect="([0-9]+|[{][[:alpha:]_][[:alnum:]_]*[}])?&?[<>]+[|&-]?[[:blank:]]*${token}"
@@ -118,14 +114,13 @@ detect_block_reasons() {
   local newline=$'\n'
   local command_start="(^|[${OPERATOR_CHARS}${newline}])[[:space:]]*(${skip_word}[[:blank:]]+)*"
 
-  # 代入値をパスと誤認しないよう = を含む語を除く。文字クラス内の \ はリテラル
+  # 代入値をパスと誤認しないよう = を含む語を除外
   local command_prefix="([^[:space:]${OPERATOR_CHARS}=]*/|[\\])?"
 
-  # macOS の大文字小文字を区別しないファイルシステムに合わせ、コマンド名の大小文字を問わない
+  # macOS の大小文字を区別しないファイルシステムに対応
   local rm_name='[rR][mM]'
   local sudo_name='[sS][uU][dD][oO]'
 
-  # 再帰削除（-r / -R）と強制（-f）は結合・分離・長いオプションに対応し、順序を問わない
   local recursive="(-${short_flags}[rR]${short_flags}|--recursive)"
   local force="(-${short_flags}f${short_flags}|--force)"
   local combined_flags="-${short_flags}([rR]${short_flags}f|f${short_flags}[rR])${short_flags}"
@@ -134,11 +129,10 @@ detect_block_reasons() {
 
   emit_if_matches "$masked_command" "$command_start$rm_recursive_force" "rm -rf / rm -Rf / rm --recursive --force は許可していません。"
   emit_if_matches "$masked_command" "${command_start}${command_prefix}${sudo_name}[[:space:]]+" "sudo の使用は Claude からは許可していません。"
-  # sh / bash の直後が名前の構成文字（英数字 _ . -）なら除外し、リダイレクト直結は検知する
+  # sh / bash の部分一致を除外し、直結リダイレクトを検知
   emit_if_matches "$masked_command" '(curl|wget)[^|]*\|[[:space:]]*(sh|bash)($|[^[:alnum:]_.-])' "curl / wget ... | sh / bash 形式のコマンドは許可していません。"
 }
 
-# ブロック理由を PreToolUse の拒否 JSON にまとめる
 print_block_json() {
   local command="$1" reasons="$2" decision
   if ! decision=$(jq -n --arg command "$command" --arg reasons "$reasons" '
