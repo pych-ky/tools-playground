@@ -102,20 +102,24 @@ detect_block_reasons() {
   # 改行はコマンド区切り
   local token_char="[^[:space:]${OPERATOR_CHARS}]"
   local token="${token_char}+"
-  local token_gap="([[:blank:]]+${token})*[[:blank:]]+"
-  local short_flags="[^-[:space:]${OPERATOR_CHARS}]*"
+  local argument="[^[:space:]${OPERATOR_CHARS}<>]+"
+  local short_flags="[^-[:space:]${OPERATOR_CHARS}<>]*"
 
   # リダイレクト内の &・| は区切りにしない
   local reserved_word="(if|then|elif|else|while|until|do|time([[:blank:]]+(-p|--))*|coproc|function[[:blank:]]+${token}|[{!])"
   local assignment="[[:alpha:]_][^[:space:]${OPERATOR_CHARS}=]*=${token_char}*"
-  local redirect="([0-9]+|[{][[:alpha:]_][[:alnum:]_]*[}])?&?[<>]+[|&-]?[[:blank:]]*${token}"
+  local redirect_body="&?[<>]+[|&-]?[[:blank:]]*"
+  local redirect="([0-9]+|[{][[:alpha:]_][[:alnum:]_]*[}])?${redirect_body}${token}"
   local skip_word="(${reserved_word}|${assignment}|${redirect})"
+  # 直結するリダイレクトは宛先まで読み飛ばす
+  local token_gap="([[:blank:]]+${argument}|[[:blank:]]*${redirect_body}${argument})*[[:blank:]]+"
 
   local newline=$'\n'
   local command_start="(^|[${OPERATOR_CHARS}${newline}])[[:space:]]*(${skip_word}[[:blank:]]+)*"
+  local command_end="($|[[:space:]${OPERATOR_CHARS}<>])"
 
   # 代入値をパスと誤認しないよう = を含む語を除外
-  local command_prefix="([^[:space:]${OPERATOR_CHARS}=]*/|[\\])?"
+  local command_prefix="([^[:space:]${OPERATOR_CHARS}<>=]*/|[\\])?"
 
   # macOS の大小文字を区別しないファイルシステムに対応
   local rm_name='[rR][mM]'
@@ -128,9 +132,9 @@ detect_block_reasons() {
   local rm_recursive_force="${command_prefix}${rm_name}${token_gap}${rm_flags}"
 
   emit_if_matches "$masked_command" "$command_start$rm_recursive_force" "rm -rf / rm -Rf / rm --recursive --force は許可していません。"
-  emit_if_matches "$masked_command" "${command_start}${command_prefix}${sudo_name}[[:space:]]+" "sudo の使用は Claude からは許可していません。"
+  emit_if_matches "$masked_command" "${command_start}${command_prefix}${sudo_name}${command_end}" "sudo の使用は Claude からは許可していません。"
   # sh / bash の部分一致を除外し、直結リダイレクトを検知
-  emit_if_matches "$masked_command" '(curl|wget)[^|]*\|[[:space:]]*(sh|bash)($|[^[:alnum:]_.-])' "curl / wget ... | sh / bash 形式のコマンドは許可していません。"
+  emit_if_matches "$masked_command" "(curl|wget)[^|]*\\|[[:space:]]*${command_prefix}(sh|bash)${command_end}" "curl / wget ... | sh / bash 形式のコマンドは許可していません。"
 }
 
 print_block_json() {
