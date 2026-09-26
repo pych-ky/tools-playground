@@ -1,14 +1,16 @@
+# エディタ設定
+
 # 上位ディレクトリの設定を継承しない
 root = true
 
 # 全ファイル: UTF-8・LF・末尾改行、行末空白削除、スペース2字
 [*]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
+charset                  = utf-8
+end_of_line              = lf
+insert_final_newline     = true
 trim_trailing_whitespace = true
-indent_style = space
-indent_size = 2
+indent_style             = space
+indent_size              = 2
 
 # Markdown の改行用の行末空白を保持
 [*.{md,md.template}]
@@ -21,4 +23,4 @@ indent_size = 4
 # Makefile はタブでインデント
 [Makefile]
 indent_style = tab
-indent_size = tab
+indent_size  = tab

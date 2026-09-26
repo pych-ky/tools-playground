@@ -19,6 +19,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Load shared agent rules
+        run: |
+          mkdir -p ../dotfiles/.config/agents
+          curl --fail --silent --show-error --location \
+            --output ../dotfiles/.config/agents/AGENTS.md \
+            https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
       - uses: anthropics/claude-code-action@cfc3eb22bfed5c26ef66e3223c982af27e4524de # v1.0.231
         with:
           github_token: ${{ github.token }}
