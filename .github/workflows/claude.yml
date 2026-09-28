@@ -1,4 +1,5 @@
-# 所有者の @claude コメントで実行
+# @claude コメントによる Claude Code 実行
+
 name: Claude Code
 
 permissions: {}
@@ -31,7 +32,7 @@ jobs:
           curl --fail --silent --show-error --location \
             --output ../dotfiles/.config/agents/AGENTS.md \
             https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
-      # Workaround for anthropics/claude-code-action#1236; remove when fixed.
+      # anthropics/claude-code-action#1236 の回避策（解消後に削除）
       - name: Authenticate branch setup
         env:
           GITHUB_TOKEN: ${{ github.token }}

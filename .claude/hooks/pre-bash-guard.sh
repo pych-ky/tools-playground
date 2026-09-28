@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# Bash の危険操作を拒否する PreToolUse フック
+# Bash 実行前ガードのフック
 
 set -euo pipefail
 
+# 理由を表示して終了コード 2 で終了
 # コマンド置換の exit はサブシェルだけに効くため、呼び出し元でも終了させる
 block_and_exit() {
   printf 'pre-bash-guard.sh: %s; Bash command blocked\n' "$1" >&2
   exit 2
 }
 
+# hook 入力から前後の空白を除いた Bash コマンドを返す
 extract_bash_command() {
   local command
   if ! command=$(jq -rse '
@@ -37,6 +39,7 @@ extract_bash_command() {
 
 readonly OPERATOR_CHARS=';&|()'
 
+# コマンドがパターンに一致すれば理由を出力
 emit_if_matches() {
   local command="$1" pattern="$2" reason="$3" status
   [[ $command =~ $pattern ]] && status=0 || status=$?
@@ -47,6 +50,7 @@ emit_if_matches() {
   esac
 }
 
+# 行末の \ による行継続を1行に連結
 # 偶数個の行末 \ とコメントでは改行を残す
 join_line_continuations() {
   local text="$1" line joined=''
@@ -68,6 +72,7 @@ join_line_continuations() {
   printf '%s' "$joined"
 }
 
+# echo・git commit の引用内の演算子を _ に置き換えて返す
 mask_static_quoted_operators() {
   local command="$1"
   local mask_target='^[[:space:]]*(echo|git[[:space:]]+commit)([[:space:]]|$)'
@@ -93,27 +98,28 @@ mask_static_quoted_operators() {
   printf '%s' "$command"
 }
 
+# コマンドを検査し、該当する拒否理由を1行ずつ出力
 # 展開・ラッパー・引用したコマンド名や引用を含む値・別インタープリタ経由は網羅しない
 detect_block_reasons() {
   local command masked_command
   command="$(join_line_continuations "$1")" || block_and_exit 'failed to join line continuations'
   masked_command="$(mask_static_quoted_operators "$command")"
 
-  # 改行はコマンド区切り
   local token_char="[^[:space:]${OPERATOR_CHARS}]"
   local token="${token_char}+"
   local argument="[^[:space:]${OPERATOR_CHARS}<>]+"
   local short_flags="[^-[:space:]${OPERATOR_CHARS}<>]*"
 
-  # リダイレクト内の &・| は区切りにしない
   local reserved_word="(if|then|elif|else|while|until|do|time([[:blank:]]+(-p|--))*|coproc|function[[:blank:]]+${token}|[{!])"
   local assignment="[[:alpha:]_][^[:space:]${OPERATOR_CHARS}=]*=${token_char}*"
+  # リダイレクト内の &・| は区切りにしない
   local redirect_body="&?[<>]+[|&-]?[[:blank:]]*"
   local redirect="([0-9]+|[{][[:alpha:]_][[:alnum:]_]*[}])?${redirect_body}${token}"
   local skip_word="(${reserved_word}|${assignment}|${redirect})"
   # 直結するリダイレクトは宛先まで読み飛ばす
   local token_gap="([[:blank:]]+${argument}|[[:blank:]]*${redirect_body}${argument})*[[:blank:]]+"
 
+  # 改行はコマンド区切り
   local newline=$'\n'
   local command_start="(^|[${OPERATOR_CHARS}${newline}])[[:space:]]*(${skip_word}[[:blank:]]+)*"
   local command_end="($|[[:space:]${OPERATOR_CHARS}<>])"
@@ -137,6 +143,7 @@ detect_block_reasons() {
   emit_if_matches "$masked_command" "(curl|wget)[^|]*\\|[[:space:]]*${command_prefix}(sh|bash)${command_end}" "curl / wget ... | sh / bash 形式のコマンドは許可していません。"
 }
 
+# 拒否理由を含む deny 判定の JSON を出力
 print_block_json() {
   local command="$1" reasons="$2" decision
   if ! decision=$(jq -n --arg command "$command" --arg reasons "$reasons" '
@@ -154,6 +161,7 @@ print_block_json() {
   printf '%s\n' "$decision"
 }
 
+# hook 入力の Bash コマンドを検査し、危険なら deny を返す
 main() {
   if ! command -v jq >/dev/null 2>&1; then
     block_and_exit 'jq is required'

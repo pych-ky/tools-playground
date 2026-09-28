@@ -1,37 +1,39 @@
-# Secrets and local config
+# Git の除外設定
+
+## 認証情報・秘密鍵
+*.key
+*.p12
+*.p8
+*.pem
+*.pfx
+*.ppk
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.p8
-*.ppk
-id_rsa*
+.netrc
+credentials/
+id_dsa*
 id_ecdsa*
 id_ed25519*
-id_dsa*
-.netrc
+id_rsa*
 secrets/
-credentials/
 
-# Editor and OS files
-.DS_Store
-.idea/
-.vscode/
-*~
-
-# Temporary output
+## ローカル生成物
 *.bak
 *.log
 *.tmp
 .tmp/
 work/
 
-# Local Claude Code state
+## Claude Code
 .claude/.cc-writes/
 .claude/plans/
 .claude/projects/
 .claude/settings.local.json
 .claude/todos/
+
+## エディタ・OS メタデータ
+*~
+.DS_Store
+.idea/
+.vscode/

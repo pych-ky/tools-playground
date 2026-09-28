@@ -1,10 +1,12 @@
-language: ja-JP # レビュー言語
+# CodeRabbit のレビュー設定
+
+language: ja-JP
 reviews:
-  profile: chill # バランス重視のレビュー
+  profile: chill  # バランス重視のレビュー
   # レビュー結果に応じた修正要求・自動承認
   request_changes_workflow: true
   auto_review:
-    drafts: true # ドラフト PR も自動レビュー
+    drafts: true
     # 全マージ先ブランチを対象に追加（正規表現）
     base_branches:
       - .*
@@ -18,4 +20,4 @@ knowledge_base:
     scope: local
 code_generation:
   docstrings:
-    language: ja-JP # 生成する docstring の言語
+    language: ja-JP
