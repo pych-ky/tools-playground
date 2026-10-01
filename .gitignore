@@ -1,22 +1,43 @@
 # Git の除外設定
 
 ## 認証情報・秘密鍵
-*.key
-*.p12
-*.p8
-*.pem
-*.pfx
-*.ppk
+
+### 環境変数ファイル・秘密ディレクトリ
 .env
 .env.*
 !.env.example
-.netrc
 credentials/
-id_dsa*
-id_ecdsa*
-id_ed25519*
-id_rsa*
 secrets/
+
+### 鍵・証明書
+*.key
+*.p12
+*.pem
+*.pfx
+.gnupg/
+.ssh/
+
+### AWS CLI
+.aws/active-profile
+.aws/cli/
+.aws/config
+.aws/credentials
+.aws/sso/
+
+### CLI・サービスの認証情報
+.codex/auth.json
+.config/gcloud/
+.config/gh/hosts.yml
+.docker/config.json
+.kube/config
+.netrc
+.npmrc
+.pgpass
+.pypirc
+
+## Python の生成物
+*.pyc
+__pycache__/
 
 ## ローカル生成物
 *.bak
@@ -25,12 +46,21 @@ secrets/
 .tmp/
 work/
 
+## Codex
+.codex/config.toml
+etc/codex/memories/
+etc/codex/tmp/
+
 ## Claude Code
-.claude/.cc-writes/
-.claude/plans/
-.claude/projects/
-.claude/settings.local.json
-.claude/todos/
+# 追跡対象だけを許可し、端末固有の権限・履歴は除外
+.claude/*
+!.claude/CLAUDE.md
+!.claude/hooks/
+!.claude/settings.json
+
+## Karabiner-Elements
+.config/karabiner/assets/
+.config/karabiner/automatic_backups/
 
 ## エディタ・OS メタデータ
 *~
