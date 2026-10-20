@@ -2,19 +2,16 @@
 
 language: ja-JP
 reviews:
-  profile: chill  # バランス重視のレビュー
-  # レビュー結果に応じた修正要求・自動承認
+  profile: chill
   request_changes_workflow: true
   auto_review:
     drafts: true
-    # 全マージ先ブランチを対象に追加（正規表現）
     base_branches:
       - .*
-# 学習内容・Issue・PR の参照範囲をこのリポジトリに限定
 knowledge_base:
-  learnings:
-    scope: local
   issues:
+    scope: local
+  learnings:
     scope: local
   pull_requests:
     scope: local

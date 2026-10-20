@@ -1,5 +1,5 @@
 # Markdown 検証設定
 
 config:
-  # 1行の文字数制限を無効化
+  # 行長制限
   MD013: false

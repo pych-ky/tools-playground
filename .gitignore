@@ -2,14 +2,11 @@
 
 ## 認証情報・秘密鍵
 
-### 環境変数ファイル・秘密ディレクトリ
 .env
 .env.*
-!.env.example
 credentials/
 secrets/
 
-### 鍵・証明書
 *.key
 *.p12
 *.pem
@@ -17,14 +14,12 @@ secrets/
 .gnupg/
 .ssh/
 
-### AWS CLI
 .aws/active-profile
 .aws/cli/
 .aws/config
 .aws/credentials
 .aws/sso/
 
-### CLI・サービスの認証情報
 .codex/auth.json
 .config/gcloud/
 .config/gh/hosts.yml
@@ -35,11 +30,11 @@ secrets/
 .pgpass
 .pypirc
 
-## Python の生成物
+## 生成物
+
 *.pyc
 __pycache__/
 
-## ローカル生成物
 *.bak
 *.log
 *.tmp
@@ -47,22 +42,25 @@ __pycache__/
 work/
 
 ## Codex
+
 .codex/config.toml
 etc/codex/memories/
 etc/codex/tmp/
 
 ## Claude Code
-# 追跡対象だけを許可し、端末固有の権限・履歴は除外
+
 .claude/*
 !.claude/CLAUDE.md
 !.claude/hooks/
 !.claude/settings.json
 
 ## Karabiner-Elements
+
 .config/karabiner/assets/
 .config/karabiner/automatic_backups/
 
 ## エディタ・OS メタデータ
+
 *~
 .DS_Store
 .idea/

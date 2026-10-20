@@ -12,8 +12,8 @@ jobs:
   claude-review:
     permissions:
       contents: read
-      pull-requests: write
       issues: read
+      pull-requests: write
     if: contains(github.event.pull_request.labels.*.name, 'claude-review')
     runs-on: ubuntu-latest
     steps:
@@ -23,8 +23,7 @@ jobs:
       - name: Load shared agent rules
         run: |
           mkdir -p ../dotfiles/.config/agents
-          curl --fail --silent --show-error --location \
-            --output ../dotfiles/.config/agents/AGENTS.md \
+          curl -fsSL -o ../dotfiles/.config/agents/AGENTS.md \
             https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
       - uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
         with:
@@ -34,9 +33,9 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            この PR のコード品質・推奨慣行・不具合・性能・セキュリティ・テスト範囲をレビューし、日本語で指摘してください。
-
-            全体の指摘は `gh pr comment`、行別の指摘は `mcp__github_inline_comment__create_inline_comment` (`confirmed: true`) で投稿してください。
-            レビュー結果は GitHub コメントだけに投稿し、メッセージでは返さないでください。
+            コード品質・推奨慣行・不具合・性能・セキュリティ・テスト範囲をレビュー。
+            指摘は日本語で GitHub コメントにのみ投稿し、メッセージには返さない。
+            - 全体: `gh pr comment`
+            - 行別: `mcp__github_inline_comment__create_inline_comment` (`confirmed: true`)
           claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),mcp__github_inline_comment__create_inline_comment"
