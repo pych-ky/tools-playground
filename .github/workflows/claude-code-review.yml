@@ -25,7 +25,7 @@ jobs:
           mkdir -p ../dotfiles/.config/agents
           curl -fsSL -o ../dotfiles/.config/agents/AGENTS.md \
             https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
-      - uses: anthropics/claude-code-action@cab360f6565aa35a51d6ce9e43f1f4287c0a32ea # v1.0.241
+      - uses: anthropics/claude-code-action@f27be6b65a4652f08a2ba3cff79114829b588967 # v1.0.252
         with:
           github_token: ${{ github.token }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
