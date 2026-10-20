@@ -13,11 +13,11 @@ on:
 jobs:
   claude:
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-      id-token: write
       actions: read
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     if: >-
       contains(github.event.comment.body, '@claude') &&
       github.event.comment.author_association == 'OWNER'
@@ -29,10 +29,9 @@ jobs:
       - name: Load shared agent rules
         run: |
           mkdir -p ../dotfiles/.config/agents
-          curl --fail --silent --show-error --location \
-            --output ../dotfiles/.config/agents/AGENTS.md \
+          curl -fsSL -o ../dotfiles/.config/agents/AGENTS.md \
             https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
-      # anthropics/claude-code-action#1236 の回避策（解消後に削除）
+      # anthropics/claude-code-action#1236 解消後に削除
       - name: Authenticate branch setup
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -47,7 +46,7 @@ jobs:
             actions: read
           claude_args: |
             --allowedTools mcp__github__create_pull_request
-            --append-system-prompt "Please respond in Japanese."
+            --append-system-prompt "日本語で回答してください。"
       - name: Remove Git credentials
         if: always()
         run: |
