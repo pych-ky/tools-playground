@@ -17,7 +17,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'claude-review')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Load shared agent rules
@@ -25,7 +25,7 @@ jobs:
           mkdir -p ../dotfiles/.config/agents
           curl -fsSL -o ../dotfiles/.config/agents/AGENTS.md \
             https://raw.githubusercontent.com/pych-ky/dotfiles/main/.config/agents/AGENTS.md
-      - uses: anthropics/claude-code-action@d535f5172dec02b204866b393d6b20b9b2aaf98d # v1.0.266
+      - uses: anthropics/claude-code-action@v1.0.266
         with:
           github_token: ${{ github.token }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
