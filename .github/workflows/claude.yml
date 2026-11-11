@@ -39,7 +39,7 @@ jobs:
           auth_header="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
           git config --local "http.${GITHUB_SERVER_URL}/.extraheader" \
             "AUTHORIZATION: basic ${auth_header}"
-      - uses: anthropics/claude-code-action@v1.0.266
+      - uses: anthropics/claude-code-action@v1.0.269
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
