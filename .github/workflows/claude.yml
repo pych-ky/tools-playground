@@ -44,7 +44,9 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
+          # auto mode では許可外の操作も審査次第で実行されるため、従来の権限モードに固定する
           claude_args: |
+            --permission-mode acceptEdits
             --allowedTools mcp__github__create_pull_request
             --append-system-prompt "日本語で回答してください。"
       - name: Remove Git credentials

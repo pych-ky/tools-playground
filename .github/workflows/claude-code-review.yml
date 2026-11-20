@@ -37,5 +37,7 @@ jobs:
             指摘は日本語で GitHub コメントにのみ投稿し、メッセージには返さない。
             - 全体: `gh pr comment`
             - 行別: `mcp__github_inline_comment__create_inline_comment` (`confirmed: true`)
+          # auto mode では許可外の操作も審査次第で実行されるため、従来の権限モードに固定する
           claude_args: |
+            --permission-mode default
             --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),mcp__github_inline_comment__create_inline_comment"
